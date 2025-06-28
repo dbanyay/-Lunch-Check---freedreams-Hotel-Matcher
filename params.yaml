@@ -1,0 +1,9 @@
+scrape_lunchcheck:
+  base_url: "https://www.lunch-card.ch/public/LunchCheck/LC_Directory.aspx"
+
+scrape_freedreams:
+    base_url: "https://www.freedreams.ch/de/hotels/schweiz"
+
+merge_datasets:
+  restaurant_match_score: 90 # levenshtein distance threshold for matching restaurant names
+  location_match_score: 90 # levenshtein distance threshold for matching locations

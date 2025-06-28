@@ -1,0 +1,88 @@
+schema: '2.0'
+stages:
+  scrape_lunchcheck:
+    cmd: python src/scrape_lunchcheck.py --base-url 
+      https://www.lunch-card.ch/public/LunchCheck/LC_Directory.aspx 
+      --output-filename lunchcheck_restaurants.csv --headless
+    deps:
+    - path: src/scrape_lunchcheck.py
+      hash: md5
+      md5: 5d376546000c657ed31595427ab0b71e
+      size: 20310
+    params:
+      params.yaml:
+        scrape_lunchcheck.base_url: 
+          https://www.lunch-card.ch/public/LunchCheck/LC_Directory.aspx
+  scrape_freedreams_2nights:
+    cmd: python src/scrape_freedreams.py --base-url 
+      https://www.freedreams.ch/de/hotels/schweiz --output-filename 
+      freedreams_restaurants_2nights.csv --num-nights 2 --headless
+    deps:
+    - path: src/scrape_freedreams.py
+      hash: md5
+      md5: a721f41a38bafb1d2fbb70e31a331bb1
+      size: 11947
+    params:
+      params.yaml:
+        scrape_freedreams.base_url: https://www.freedreams.ch/de/hotels/schweiz
+  scrape_freedreams_3nights:
+    cmd: python src/scrape_freedreams.py --base-url 
+      https://www.freedreams.ch/de/hotels/schweiz --output-filename 
+      freedreams_restaurants_3nights.csv --num-nights 3 --headless
+    deps:
+    - path: src/scrape_freedreams.py
+      hash: md5
+      md5: a721f41a38bafb1d2fbb70e31a331bb1
+      size: 11947
+    params:
+      params.yaml:
+        scrape_freedreams.base_url: https://www.freedreams.ch/de/hotels/schweiz
+  merge_datasets:
+    cmd: python src/merge_datasets.py --input-files 
+      data/lunchcheck_restaurants.csv data/freedreams_restaurants_2nights.csv 
+      data/freedreams_restaurants_3nights.csv --output-path results
+    deps:
+    - path: data/freedreams_restaurants_2nights.csv
+      hash: md5
+      md5: c9e2337e39ca93490e8d222746610d91
+      size: 88502
+    - path: data/freedreams_restaurants_3nights.csv
+      hash: md5
+      md5: 4ac4bb1d63d02f35f597990ebe5f3e12
+      size: 170128
+    - path: data/lunchcheck_restaurants.csv
+      hash: md5
+      md5: 1ac0f58f36b0075d091ab700a2bfad12
+      size: 594624
+    - path: src/merge_datasets.py
+      hash: md5
+      md5: ebd5c006aa4b1e3b17fbb89a6f83559b
+      size: 8805
+  collect_info_2nights:
+    cmd: python src/collect_info.py --input-file 
+      results/filtered_matches_2nights.csv --output-html-path 
+      results/2_nights_info.html
+    deps:
+    - path: src/collect_info.py
+      hash: md5
+      md5: 2935f54c992fbc920feeed1a1f758ca2
+      size: 11344
+    outs:
+    - path: results/2_nights_info.html
+      hash: md5
+      md5: c6123f25d8eb027b3b060614a9dea3c2
+      size: 8575025
+  collect_info_3nights:
+    cmd: python src/collect_info.py --input-file 
+      results/filtered_matches_3nights.csv --output-html-path 
+      results/3_nights_info.html
+    deps:
+    - path: src/collect_info.py
+      hash: md5
+      md5: 2935f54c992fbc920feeed1a1f758ca2
+      size: 11344
+    outs:
+    - path: results/3_nights_info.html
+      hash: md5
+      md5: bf42080dec060a0261ce7e7af560bf51
+      size: 14461832
