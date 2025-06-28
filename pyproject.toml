@@ -1,0 +1,17 @@
+[project]
+name = "lunch-check-freedreams-hotel-matcher"
+version = "0.1.0"
+description = "A tool to match hotel offers with lunch check vouchers for Freedreams hotels."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "selenium>=4.0.0",
+    "pandas>=2.0.0",
+    "fuzzywuzzy>=0.18.0",
+    "python-Levenshtein>=0.27.1",
+    "levenshtein>=0.27.1",
+    "tqdm>=4.64.0",
+    "joblib>=1.5.0",
+    "dvc>=3.60.0",
+    "webdriver-manager>=4.0.2",
+]

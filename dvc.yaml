@@ -5,6 +5,8 @@ stages:
       - scrape_lunchcheck.base_url
     deps:
       - src/scrape_lunchcheck.py
+    outs:
+      - data/lunchcheck_restaurants.csv
 
   scrape_freedreams_2nights:
     cmd: python src/scrape_freedreams.py --base-url ${scrape_freedreams.base_url} --output-filename freedreams_restaurants_2nights.csv --num-nights 2 --headless
@@ -12,6 +14,8 @@ stages:
       - scrape_freedreams.base_url
     deps:
       - src/scrape_freedreams.py
+    outs:
+        - data/freedreams_restaurants_2nights.csv
 
   scrape_freedreams_3nights:
     cmd: python src/scrape_freedreams.py --base-url ${scrape_freedreams.base_url} --output-filename freedreams_restaurants_3nights.csv --num-nights 3 --headless
@@ -19,6 +23,8 @@ stages:
       - scrape_freedreams.base_url
     deps:
       - src/scrape_freedreams.py
+    outs:
+        - data/freedreams_restaurants_3nights.csv
 
   merge_datasets:
     cmd: python src/merge_datasets.py --input-files data/lunchcheck_restaurants.csv data/freedreams_restaurants_2nights.csv data/freedreams_restaurants_3nights.csv --output-path results
@@ -27,11 +33,15 @@ stages:
       - data/freedreams_restaurants_2nights.csv
       - data/freedreams_restaurants_3nights.csv
       - src/merge_datasets.py
+    outs:
+        - results/filtered_matches_2nights.csv
+        - results/filtered_matches_3nights.csv
 
   collect_info_2nights:
     cmd: python src/collect_info.py --input-file results/filtered_matches_2nights.csv --output-html-path results/2_nights_info.html
     deps:
       - src/collect_info.py
+      - results/filtered_matches_2nights.csv
     outs:
       - results/2_nights_info.html
 
@@ -39,6 +49,7 @@ stages:
     cmd: python src/collect_info.py --input-file results/filtered_matches_3nights.csv --output-html-path results/3_nights_info.html
     deps:
       - src/collect_info.py
+      - results/filtered_matches_3nights.csv
     outs:
       - results/3_nights_info.html
 

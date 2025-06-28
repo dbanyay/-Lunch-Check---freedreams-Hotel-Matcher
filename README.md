@@ -26,3 +26,36 @@ It then:
 ## 📦 Installation
 
 This project uses [`uv`](https://github.com/astral-sh/uv) for fast and reliable dependency management.
+If you don't have it yet, you can install it with curl:
+
+```bash
+curl -sSfL https://astral.sh/uv.sh | sh
+```
+
+Then, use uv sync to install the dependencies:
+
+```bash
+uv sync
+```
+
+You need to activate the virtual environment created by uv:
+
+```bash
+source .venv/bin/activate
+```
+
+Then, initialize DVC to be able to use the pipeline:
+
+```bash
+dvc init
+```
+
+## 🚀 Usage
+Use dvc repro to run the pipeline and generate the HTML page with matched hotels:
+
+```bash
+dvc repro
+```
+
+## 📄 Output
+The output will be generated HTML files under results/ directory.
