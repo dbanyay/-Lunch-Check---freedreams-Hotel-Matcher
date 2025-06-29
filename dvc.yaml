@@ -27,30 +27,32 @@ stages:
         - data/freedreams_restaurants_3nights.csv
 
   merge_datasets:
-    cmd: python src/merge_datasets.py --input-files data/lunchcheck_restaurants.csv data/freedreams_restaurants_2nights.csv data/freedreams_restaurants_3nights.csv --output-path results
+    cmd: python src/merge_datasets.py --input-files data/lunchcheck_restaurants.csv data/freedreams_restaurants_2nights.csv data/freedreams_restaurants_3nights.csv --output-path output
     deps:
       - data/lunchcheck_restaurants.csv
       - data/freedreams_restaurants_2nights.csv
       - data/freedreams_restaurants_3nights.csv
       - src/merge_datasets.py
     outs:
-        - results/filtered_matches_2nights.csv
-        - results/filtered_matches_3nights.csv
+        - output/filtered_matches_2nights.csv
+        - output/filtered_matches_3nights.csv
 
   collect_info_2nights:
-    cmd: python src/collect_info.py --input-file results/filtered_matches_2nights.csv --output-screenshots-html-path results/2_nights_info.html --output-map-html-path results/2_nights_map.html
+    cmd: python src/collect_info.py --input-file output/filtered_matches_2nights.csv --output-screenshots-html-path results/2_nights_info.html --output-map-html-path results/2_nights_map.html
     deps:
       - src/collect_info.py
-      - results/filtered_matches_2nights.csv
+      - output/filtered_matches_2nights.csv
     outs:
       - results/2_nights_info.html
+      - results/2_nights_map.html
 
   collect_info_3nights:
-    cmd: python src/collect_info.py --input-file results/filtered_matches_3nights.csv --output-screenshots-html-path results/3_nights_info.html --output-map-html-path results/3_nights_map.html
+    cmd: python src/collect_info.py --input-file output/filtered_matches_3nights.csv --output-screenshots-html-path results/3_nights_info.html --output-map-html-path results/3_nights_map.html
     deps:
       - src/collect_info.py
-      - results/filtered_matches_3nights.csv
+      - output/filtered_matches_3nights.csv
     outs:
       - results/3_nights_info.html
+      - results/3_nights_map.html
 
 

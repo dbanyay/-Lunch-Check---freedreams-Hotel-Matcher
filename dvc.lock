@@ -55,7 +55,7 @@ stages:
   merge_datasets:
     cmd: python src/merge_datasets.py --input-files 
       data/lunchcheck_restaurants.csv data/freedreams_restaurants_2nights.csv 
-      data/freedreams_restaurants_3nights.csv --output-path results
+      data/freedreams_restaurants_3nights.csv --output-path output
     deps:
     - path: data/freedreams_restaurants_2nights.csv
       hash: md5
@@ -74,48 +74,57 @@ stages:
       md5: ebd5c006aa4b1e3b17fbb89a6f83559b
       size: 8805
     outs:
-    - path: results/filtered_matches_2nights.csv
+    - path: output/filtered_matches_2nights.csv
       hash: md5
       md5: 91a522f3396be3c7a91e3c09123cd739
       size: 2791
-    - path: results/filtered_matches_3nights.csv
+    - path: output/filtered_matches_3nights.csv
       hash: md5
       md5: f02d19ecd599b9e7237b86f67b70d6b3
       size: 4576
   collect_info_2nights:
     cmd: python src/collect_info.py --input-file 
-      results/filtered_matches_2nights.csv --output-html-path 
-      results/2_nights_info.html
+      output/filtered_matches_2nights.csv --output-screenshots-html-path 
+      results/2_nights_info.html --output-map-html-path 
+      results/2_nights_map.html
     deps:
-    - path: results/filtered_matches_2nights.csv
+    - path: output/filtered_matches_2nights.csv
       hash: md5
       md5: 91a522f3396be3c7a91e3c09123cd739
       size: 2791
     - path: src/collect_info.py
       hash: md5
-      md5: 4f4c439aa4e5f43a9037496bf8868731
-      size: 11334
+      md5: 5ea391a698bfa4ec459be357e7017ecc
+      size: 19304
     outs:
     - path: results/2_nights_info.html
       hash: md5
-      md5: c034d87546e349b95103fb1b60c74dce
-      size: 7861541
+      md5: 15ae997effa0bd3da2a73a36ff28dfec
+      size: 7859109
+    - path: results/2_nights_map.html
+      hash: md5
+      md5: 91cb062ec9fbe0d1e6ac64e7a7874a4b
+      size: 6593234
   collect_info_3nights:
     cmd: python src/collect_info.py --input-file 
-      results/filtered_matches_3nights.csv --output-screenshots-html-path 
+      output/filtered_matches_3nights.csv --output-screenshots-html-path 
       results/3_nights_info.html --output-map-html-path 
       results/3_nights_map.html
     deps:
-    - path: results/filtered_matches_3nights.csv
+    - path: output/filtered_matches_3nights.csv
       hash: md5
       md5: f02d19ecd599b9e7237b86f67b70d6b3
       size: 4576
     - path: src/collect_info.py
       hash: md5
-      md5: 2379820c9ba263a413438e07aeb55f79
-      size: 16407
+      md5: 5ea391a698bfa4ec459be357e7017ecc
+      size: 19304
     outs:
     - path: results/3_nights_info.html
       hash: md5
       md5: 951e84e16060ba6420dce47dd88a2636
       size: 13276720
+    - path: results/3_nights_map.html
+      hash: md5
+      md5: a2904355089c27652b0093ba2c2cd70f
+      size: 11408405

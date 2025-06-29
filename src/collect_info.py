@@ -79,6 +79,11 @@ def scrape_hotel_images(df):
         url = row['freedreams_webpage']
         if pd.isna(url) or not isinstance(url, str):
             print(f"Skipping row {index}: Invalid or missing URL.")
+            image_data_list.append({
+                'url': None, # Keep the structure, but indicate no image
+                'image_base64': None,
+                'index': index # Store original index for merging
+            })
             continue
 
         print(f"Processing URL ({index + 1}/{len(df)}): {url}")
@@ -91,16 +96,32 @@ def scrape_hotel_images(df):
 
             image_data_list.append({
                 'url': url,
-                'image_base64': base64_encoded_image
+                'image_base64': base64_encoded_image,
+                'index': index # Store original index for merging
             })
             print(f"Successfully scraped image for {url}")
 
         except TimeoutException:
             print(f"Timeout: The target element was not found on page for {url}. Skipping.")
+            image_data_list.append({
+                'url': url,
+                'image_base64': None, # No image if timeout
+                'index': index
+            })
         except WebDriverException as e:
             print(f"WebDriver error occurred while processing {url}: {e}. Skipping.")
+            image_data_list.append({
+                'url': url,
+                'image_base64': None,
+                'index': index
+            })
         except Exception as e:
             print(f"An unexpected error occurred for {url}: {e}. Skipping.")
+            image_data_list.append({
+                'url': url,
+                'image_base64': None,
+                'index': index
+            })
 
     driver.quit()
     return image_data_list
@@ -222,12 +243,20 @@ def generate_html_report(image_data_list, output_html_path="hotel_screenshots.ht
         """
     else:
         for data in image_data_list:
-            html_content += f"""
+            if data['image_base64']: # Only display if an image was successfully scraped
+                html_content += f"""
         <div class="hotel-entry">
             <h2>Source URL: <a href="{data['url']}" target="_blank">{data['url']}</a></h2>
             <img src="data:image/png;base64,{data['image_base64']}" alt="Screenshot of {data['url']}">
         </div>
         """
+            else:
+                html_content += f"""
+        <div class="hotel-entry">
+            <h2>Source URL: <a href="{data['url'] if data['url'] else '#'}">{data['url'] if data['url'] else 'N/A'}</a></h2>
+            <p>No screenshot available for this URL.</p>
+        </div>
+                """
 
     html_content += """
     </div>
@@ -242,20 +271,27 @@ def generate_html_report(image_data_list, output_html_path="hotel_screenshots.ht
         print(f"Error writing HTML file '{output_html_path}': {e}")
 
 
-def generate_map_html(df, location_col, output_html_path="hotel_map.html"):
+def generate_map_html(df, location_col, image_data_list, output_html_path="hotel_map.html"):
     """
     Generates an HTML file with an interactive Leaflet map displaying locations from the DataFrame
     using Nominatim for geocoding.
+    Includes hotel URL and image in the tooltip.
     """
     if location_col not in df.columns:
         print(f"Error: The DataFrame must contain a column named '{location_col}'.")
         return
+
+    # Create a dictionary for quick lookup of image data by original DataFrame index
+    image_data_map = {item['index']: item for item in image_data_list}
 
     geolocator = Nominatim(user_agent="freedreams_hotel_map_generator")
 
     markers = []
     for index, row in df.iterrows():
         location_name = row[location_col]
+        hotel_url = row.get('freedreams_webpage', 'URL Not Available') # Get URL, provide default
+        image_base64 = image_data_map.get(index, {}).get('image_base64', None)
+
         if pd.isna(location_name) or not isinstance(location_name, str):
             print(f"Skipping row {index}: Invalid or missing location name.")
             continue
@@ -264,10 +300,18 @@ def generate_map_html(df, location_col, output_html_path="hotel_map.html"):
         try:
             location = geolocator.geocode(location_name, timeout=10) # Added timeout for robustness
             if location:
+                # Construct the popup HTML content
+                popup_html = f"<b><a href='{hotel_url}' target='_blank'>{hotel_url}</a></b><br>"
+                if image_base64:
+                    popup_html += f"<img src='data:image/png;base64,{image_base64}' style='max-width:150px; height:auto; margin-top:5px;'>"
+                else:
+                    popup_html += "<p>No image available.</p>"
+
                 markers.append({
                     'name': location_name,
                     'lat': location.latitude,
-                    'lng': location.longitude
+                    'lng': location.longitude,
+                    'popup_content': popup_html # Store the full HTML for the popup
                 })
                 print(f"Successfully geocoded {location_name}: ({location.latitude}, {location.longitude})")
             else:
@@ -305,6 +349,30 @@ def generate_map_html(df, location_col, output_html_path="hotel_map.html"):
             padding: 0;
             font-family: sans-serif;
         }}
+        /* Style for Leaflet popups */
+        .leaflet-popup-content-wrapper {{
+            border-radius: 8px;
+            padding: 10px;
+        }}
+        .leaflet-popup-content {{
+            font-size: 14px;
+            line-height: 1.5;
+        }}
+        .leaflet-popup-content a {{
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+            word-break: break-all;
+        }}
+        .leaflet-popup-content a:hover {{
+            text-decoration: underline;
+        }}
+        .leaflet-popup-content img {{
+            display: block;
+            margin-top: 5px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }}
     </style>
 </head>
 <body>
@@ -332,7 +400,7 @@ def generate_map_html(df, location_col, output_html_path="hotel_map.html"):
 
             markersData.forEach(markerData => {{
                 let marker = L.marker([markerData.lat, markerData.lng]).addTo(map)
-                    .bindPopup(markerData.name); // Bind popup with location name
+                    .bindPopup(markerData.popup_content); // Bind popup with the generated HTML content
 
                 // Extend bounds for each marker
                 bounds.extend([markerData.lat, markerData.lng]);
@@ -387,14 +455,18 @@ def main():
     output_screenshots_html_file = Path.cwd() / args.output_screenshots_html_path
     output_map_html_file = Path.cwd() / args.output_map_html_path
 
+    if not output_map_html_file.parent.exists():
+        print(f"Creating directory for output map HTML: {output_map_html_file.parent}")
+        output_map_html_file.parent.mkdir(parents=True, exist_ok=True)
+
     # Scrape images and get the list of data
     scraped_images = scrape_hotel_images(df)
 
     # Generate the HTML report for screenshots
     generate_html_report(scraped_images, output_screenshots_html_file)
 
-    # Generate the interactive Leaflet Map HTML
-    generate_map_html(df, 'freedreams_location', output_map_html_file)
+    # Generate the interactive Leaflet Map HTML, passing the scraped_images list
+    generate_map_html(df, 'freedreams_location', scraped_images, output_map_html_file)
 
 
 if __name__ == "__main__":
