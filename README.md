@@ -1,4 +1,4 @@
-# 🏨 Lunch-Check Hotel Matcher 🇨🇭
+# 🏨 Lunch-Check  freedreams Hotel Matcher 🇨🇭
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![DVC](https://img.shields.io/badge/DVC-enabled-success)](https://dvc.org/)
