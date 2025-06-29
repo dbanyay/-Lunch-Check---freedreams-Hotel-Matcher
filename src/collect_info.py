@@ -8,7 +8,12 @@ from selenium.common.exceptions import TimeoutException, WebDriverException
 import base64
 import argparse
 from pathlib import Path
+import json
+import time # Import time for delays
 
+# Import Nominatim for geocoding
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 
 def setup_driver():
     """
@@ -53,22 +58,13 @@ def setup_driver():
         return None
 
 
-def scrape_hotel_images(input_csv_path):
+def scrape_hotel_images(df):
     """
-    Reads URLs from the specified CSV, visits each URL, and scrapes a screenshot
+    Reads URLs from the specified DataFrame, visits each URL, and scrapes a screenshot
     of the target div, returning a list of base64 encoded images with their URLs.
     """
-    try:
-        df = pd.read_csv(input_csv_path)
-    except FileNotFoundError:
-        print(f"Error: The input CSV file '{input_csv_path}' was not found.")
-        return []
-    except Exception as e:
-        print(f"Error reading CSV file: {e}")
-        return []
-
     if 'freedreams_webpage' not in df.columns:
-        print("Error: The CSV file must contain a column named 'freedreams_webpage'.")
+        print("Error: The DataFrame must contain a column named 'freedreams_webpage'.")
         return []
 
     image_data_list = []
@@ -77,12 +73,10 @@ def scrape_hotel_images(input_csv_path):
         return []  # Exit if driver couldn't be initialized
 
     # Define the CSS selector for the target div
-    # This selector combines all classes for specificity
     target_div_selector = '.js-hotel-detail-page.s-hotel-detail-page.s-content-box.s-content-box-white-solid.is-relative'
 
     for index, row in df.iterrows():
         url = row['freedreams_webpage']
-        # Skip if the URL is missing or not a string
         if pd.isna(url) or not isinstance(url, str):
             print(f"Skipping row {index}: Invalid or missing URL.")
             continue
@@ -90,13 +84,9 @@ def scrape_hotel_images(input_csv_path):
         print(f"Processing URL ({index + 1}/{len(df)}): {url}")
         try:
             driver.get(url)
-            # Wait up to 20 seconds for the target div to be present on the page
             wait = WebDriverWait(driver, 20)
             target_div = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, target_div_selector)))
-
-            # Take a screenshot of the specific element
             png_bytes = target_div.screenshot_as_png
-            # Encode the PNG bytes to base64 for embedding in HTML
             base64_encoded_image = base64.b64encode(png_bytes).decode('utf-8')
 
             image_data_list.append({
@@ -112,7 +102,7 @@ def scrape_hotel_images(input_csv_path):
         except Exception as e:
             print(f"An unexpected error occurred for {url}: {e}. Skipping.")
 
-    driver.quit()  # Close the browser when all URLs are processed
+    driver.quit()
     return image_data_list
 
 
@@ -252,23 +242,159 @@ def generate_html_report(image_data_list, output_html_path="hotel_screenshots.ht
         print(f"Error writing HTML file '{output_html_path}': {e}")
 
 
+def generate_map_html(df, location_col, output_html_path="hotel_map.html"):
+    """
+    Generates an HTML file with an interactive Leaflet map displaying locations from the DataFrame
+    using Nominatim for geocoding.
+    """
+    if location_col not in df.columns:
+        print(f"Error: The DataFrame must contain a column named '{location_col}'.")
+        return
+
+    geolocator = Nominatim(user_agent="freedreams_hotel_map_generator")
+
+    markers = []
+    for index, row in df.iterrows():
+        location_name = row[location_col]
+        if pd.isna(location_name) or not isinstance(location_name, str):
+            print(f"Skipping row {index}: Invalid or missing location name.")
+            continue
+
+        print(f"Geocoding location ({index + 1}/{len(df)}): {location_name}")
+        try:
+            location = geolocator.geocode(location_name, timeout=10) # Added timeout for robustness
+            if location:
+                markers.append({
+                    'name': location_name,
+                    'lat': location.latitude,
+                    'lng': location.longitude
+                })
+                print(f"Successfully geocoded {location_name}: ({location.latitude}, {location.longitude})")
+            else:
+                print(f"Could not find geocoding data for {location_name}")
+
+        except (GeocoderTimedOut, GeocoderServiceError) as e:
+            print(f"Geocoding service error for {location_name}: {e}. Skipping.")
+        except Exception as e:
+            print(f"An unexpected error occurred during geocoding for {location_name}: {e}. Skipping.")
+
+        # IMPORTANT: Add a delay to respect Nominatim's usage policy (usually 1 request per second)
+        time.sleep(1)
+
+    # Convert the Python list of dictionaries to a JSON string for JavaScript
+    markers_json = json.dumps(markers)
+
+    html_content = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Locations Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     crossorigin=""></script>
+    <style>
+        #map {{
+            height: 100vh;
+            width: 100%;
+        }}
+        body {{
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }}
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script>
+        let map;
+        let markersData = {markers_json}; // Pass markers data from Python
+
+        function initMap() {{
+            // Initialize the map, centered on a default location or first marker
+            if (markersData.length > 0) {{
+                map = L.map('map').setView([markersData[0].lat, markersData[0].lng], 5); // Set initial view to first marker
+            }} else {{
+                map = L.map('map').setView([0, 0], 2); // Default to world view if no markers
+            }}
+
+            // Add OpenStreetMap tile layer
+            L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }}).addTo(map);
+
+            // Create a LatLngBounds object to include all markers
+            let bounds = new L.LatLngBounds();
+
+            markersData.forEach(markerData => {{
+                let marker = L.marker([markerData.lat, markerData.lng]).addTo(map)
+                    .bindPopup(markerData.name); // Bind popup with location name
+
+                // Extend bounds for each marker
+                bounds.extend([markerData.lat, markerData.lng]);
+            }});
+
+            // Fit the map to the bounds of all markers, but only if there are markers
+            if (markersData.length > 0) {{
+                map.fitBounds(bounds);
+
+                // If there's only one marker, set a sensible zoom level
+                if (markersData.length === 1) {{
+                    map.setZoom(10); // Adjust zoom as needed for a single marker
+                }}
+            }}
+        }}
+
+        // Call initMap when the page loads
+        document.addEventListener('DOMContentLoaded', initMap);
+    </script>
+</body>
+</html>
+    """
+    try:
+        with open(output_html_path, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        print(f"Leaflet Map HTML generated successfully at: {output_html_path}")
+    except IOError as e:
+        print(f"Error writing Leaflet Map HTML file '{output_html_path}': {e}")
+
+
 def main():
     # Setup argument parser to accept the input CSV file path
-    parser = argparse.ArgumentParser(description="Scrape hotel detail page images from a CSV of URLs.")
+    parser = argparse.ArgumentParser(description="Scrape hotel detail page images and generate a map from a CSV of URLs.")
     parser.add_argument("--input-file", type=str, required=True,
-                        help="Path to the input CSV file containing hotel detail page URLs.")
-    parser.add_argument("--output-html-path", type=str, default="hotel_screenshots.html",
-                        help="Path to save the generated HTML report. Default is 'hotel_screenshots.html'.")
+                        help="Path to the input CSV file containing hotel data (including URLs and locations).")
+    parser.add_argument("--output-screenshots-html-path", type=str, default="hotel_screenshots.html",
+                        help="Path to save the generated HTML report for screenshots. Default is 'hotel_screenshots.html'.")
+    parser.add_argument("--output-map-html-path", type=str, default="hotel_map.html",
+                        help="Path to save the generated HTML report for the map. Default is 'hotel_map.html'.")
     args = parser.parse_args()
 
-    # Define the output HTML file name
-    output_html_file = Path.cwd() / args.output_html_path
+    try:
+        df = pd.read_csv(args.input_file)
+    except FileNotFoundError:
+        print(f"Error: The input CSV file '{args.input_file}' was not found.")
+        return
+    except Exception as e:
+        print(f"Error reading CSV file: {e}")
+        return
+
+    # Define the output HTML file names
+    output_screenshots_html_file = Path.cwd() / args.output_screenshots_html_path
+    output_map_html_file = Path.cwd() / args.output_map_html_path
 
     # Scrape images and get the list of data
-    scraped_images = scrape_hotel_images(args.input_file)
+    scraped_images = scrape_hotel_images(df)
 
-    # Generate the HTML report
-    generate_html_report(scraped_images, output_html_file)
+    # Generate the HTML report for screenshots
+    generate_html_report(scraped_images, output_screenshots_html_file)
+
+    # Generate the interactive Leaflet Map HTML
+    generate_map_html(df, 'freedreams_location', output_map_html_file)
 
 
 if __name__ == "__main__":

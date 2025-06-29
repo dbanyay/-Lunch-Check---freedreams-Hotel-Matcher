@@ -102,8 +102,9 @@ stages:
       size: 7861541
   collect_info_3nights:
     cmd: python src/collect_info.py --input-file 
-      results/filtered_matches_3nights.csv --output-html-path 
-      results/3_nights_info.html
+      results/filtered_matches_3nights.csv --output-screenshots-html-path 
+      results/3_nights_info.html --output-map-html-path 
+      results/3_nights_map.html
     deps:
     - path: results/filtered_matches_3nights.csv
       hash: md5
@@ -111,10 +112,10 @@ stages:
       size: 4576
     - path: src/collect_info.py
       hash: md5
-      md5: 4f4c439aa4e5f43a9037496bf8868731
-      size: 11334
+      md5: 2379820c9ba263a413438e07aeb55f79
+      size: 16407
     outs:
     - path: results/3_nights_info.html
       hash: md5
-      md5: f2a9de645ae73199386f857f8ec35c1b
-      size: 13280148
+      md5: 951e84e16060ba6420dce47dd88a2636
+      size: 13276720

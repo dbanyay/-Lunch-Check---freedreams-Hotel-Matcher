@@ -38,7 +38,7 @@ stages:
         - results/filtered_matches_3nights.csv
 
   collect_info_2nights:
-    cmd: python src/collect_info.py --input-file results/filtered_matches_2nights.csv --output-html-path results/2_nights_info.html
+    cmd: python src/collect_info.py --input-file results/filtered_matches_2nights.csv --output-screenshots-html-path results/2_nights_info.html --output-map-html-path results/2_nights_map.html
     deps:
       - src/collect_info.py
       - results/filtered_matches_2nights.csv
@@ -46,7 +46,7 @@ stages:
       - results/2_nights_info.html
 
   collect_info_3nights:
-    cmd: python src/collect_info.py --input-file results/filtered_matches_3nights.csv --output-html-path results/3_nights_info.html
+    cmd: python src/collect_info.py --input-file results/filtered_matches_3nights.csv --output-screenshots-html-path results/3_nights_info.html --output-map-html-path results/3_nights_map.html
     deps:
       - src/collect_info.py
       - results/filtered_matches_3nights.csv

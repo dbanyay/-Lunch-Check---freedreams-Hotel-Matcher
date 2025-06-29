@@ -32,7 +32,7 @@ If you don't have it yet, you can install it with curl:
 curl -sSfL https://astral.sh/uv.sh | sh
 ```
 
-Then, use uv sync to install the dependencies:
+Then, use uv sync to install the dependencies in a virtual environment:
 
 ```bash
 uv sync
