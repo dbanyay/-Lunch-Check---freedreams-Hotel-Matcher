@@ -11,7 +11,7 @@ Find hotels in Switzerland where you can **stay using your Lunch-Check credit** 
 This tool scrapes:
 
 - 🔸 **[Freedreams](https://www.freedreams.ch/):** Hotel voucher provider – book stays of 2+ nights where you only pay for breakfast and dinner, not the room.
-- 🔸 **[Lunch-Check]([https://www.lunch-check.ch/](https://www.lunch-card.ch/public/LunchCheck/LC_Directory.aspx)):** A Swiss employee benefit allowing payment at restaurants using credits.
+- 🔸 **[Lunch-Check]([https://www.lunch-check.ch/](https://www.lunch-check.ch/)):** A Swiss employee benefit allowing payment at restaurants using credits.
 
 It then:
 
