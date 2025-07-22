@@ -23,20 +23,20 @@
 
         /* Header Section */
         .hero-section {
-            min-height: 100vh;
+            min-height: 90vh; /* Adjusted for better fit on screen */
             display: flex;
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, #2d5a27 0%, #1a4d1a 50%, #0f3b0f 100%);
             position: relative;
-            padding: 2rem;
+            padding: 1.5rem; /* Slightly reduced padding */
         }
 
         .hero-content {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             border-radius: 24px;
-            padding: 3rem;
+            padding: 2.5rem; /* Slightly reduced padding */
             max-width: 800px;
             width: 100%;
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
@@ -57,26 +57,26 @@
         }
 
         .hero-content h1 {
-            font-size: 3.5rem;
+            font-size: 3.2rem; /* Slightly reduced font size */
             font-weight: 700;
             background: linear-gradient(135deg, #4ade80, #16a34a, #15803d);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.2rem; /* Slightly reduced margin */
             line-height: 1.1;
         }
 
         .hero-content > p {
-            font-size: 1.2rem;
+            font-size: 1.1rem; /* Slightly reduced font size */
             color: #666;
             line-height: 1.6;
-            margin-bottom: 2rem;
+            margin-bottom: 1.8rem; /* Slightly reduced margin */
         }
 
         .steps-container {
-            margin-top: 2rem;
-            padding: 2rem;
+            margin-top: 1.8rem; /* Slightly reduced margin */
+            padding: 1.8rem; /* Slightly reduced padding */
             background: linear-gradient(135deg, rgba(22, 163, 74, 0.1), rgba(21, 128, 61, 0.05));
             border-radius: 16px;
             border: 2px solid rgba(22, 163, 74, 0.2);
@@ -85,8 +85,8 @@
 
         .steps-container h3 {
             color: #16a34a;
-            margin-bottom: 1.5rem;
-            font-size: 1.3rem;
+            margin-bottom: 1.2rem; /* Slightly reduced margin */
+            font-size: 1.2rem; /* Slightly reduced font size */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -98,12 +98,12 @@
             max-width: 600px;
             margin: 0 auto;
             color: #333;
-            line-height: 1.8;
-            font-size: 1.1rem;
+            line-height: 1.7; /* Slightly reduced line height */
+            font-size: 1rem; /* Slightly reduced font size */
         }
 
         .steps-container li {
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem; /* Slightly reduced margin */
             padding-left: 0.5rem;
         }
 
@@ -125,7 +125,7 @@
 
         .scroll-indicator {
             position: absolute;
-            bottom: 2rem;
+            bottom: 1.5rem; /* Adjusted for smaller hero section */
             left: 50%;
             transform: translateX(-50%);
             color: rgba(255, 255, 255, 0.8);
@@ -146,12 +146,12 @@
         }
 
         .scroll-indicator div {
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+            font-size: 0.85rem; /* Slightly reduced font size */
+            margin-bottom: 0.4rem;
         }
 
         .scroll-arrow {
-            font-size: 1.5rem;
+            font-size: 1.3rem; /* Slightly reduced font size */
         }
 
         /* Map Section */
@@ -162,6 +162,13 @@
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
             padding-top: 2rem;
+        }
+
+        .last-update {
+            text-align: center;
+            color: #777;
+            font-size: 0.9rem;
+            margin-bottom: 1rem; /* Space between update text and toggle */
         }
 
         /* Toggle Section */
@@ -318,23 +325,40 @@
             margin: 0 auto;
         }
 
+        .footer p.impressum {
+            padding-top: 0.5rem; /* Adds padding to the top */
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
+            .hero-section {
+                min-height: 80vh; /* Further adjust for tablets */
+                padding: 1rem;
+            }
+
             .hero-content {
-                padding: 2rem;
-                margin: 1rem;
+                padding: 1.8rem;
+                margin: 0.8rem;
             }
 
             .hero-content h1 {
-                font-size: 2.8rem;
+                font-size: 2.5rem;
             }
 
             .hero-content > p {
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
 
             .steps-container {
-                padding: 1.5rem;
+                padding: 1.2rem;
+            }
+
+            .steps-container h3 {
+                font-size: 1.1rem;
+            }
+
+            .steps-container ol {
+                font-size: 0.95rem;
             }
 
             .toggle-option {
@@ -345,30 +369,101 @@
             .map-section {
                 padding: 1rem;
             }
+
+            .map-container {
+                height: 60vh; /* Give map a good height on tablets */
+            }
         }
 
         @media (max-width: 480px) {
+            .hero-section {
+                min-height: auto; /* Allow height to auto-adjust on smallest screens */
+                padding: 1rem 0.5rem;
+            }
+
             .hero-content h1 {
-                font-size: 2.2rem;
+                font-size: 2rem;
+                margin-bottom: 1rem;
             }
 
             .hero-content {
-                padding: 1.5rem;
+                padding: 1.2rem;
+                margin: 0.5rem;
+                border-radius: 16px;
+            }
+
+            .hero-content > p {
+                font-size: 0.95rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .steps-container {
+                padding: 1rem;
+                margin-top: 1.5rem;
+            }
+
+            .steps-container h3 {
+                font-size: 1rem;
+                margin-bottom: 1rem;
             }
 
             .steps-container ol {
-                font-size: 1rem;
+                font-size: 0.9rem;
+                line-height: 1.6;
+            }
+
+            .steps-container li {
+                margin-bottom: 0.6rem;
+            }
+
+            .scroll-indicator {
+                bottom: 1rem;
+            }
+
+            .scroll-indicator div {
+                font-size: 0.8rem;
+            }
+
+            .scroll-arrow {
+                font-size: 1.2rem;
             }
 
             .toggle-container {
-                flex-direction: column;
+                flex-direction: column; /* Stack buttons vertically */
                 width: 100%;
-                max-width: 300px;
+                max-width: 250px; /* Constrain width of stacked buttons */
                 margin: 0 auto;
+                padding: 0.25rem; /* Smaller padding for container */
             }
 
             .toggle-option {
-                margin: 0.25rem 0;
+                margin: 0.25rem 0; /* Space between stacked buttons */
+                padding: 0.8rem 1rem; /* Adjust padding for smaller buttons */
+                font-size: 0.85rem; /* Smaller font size for buttons */
+            }
+
+            .map-section {
+                padding: 0.5rem; /* Less padding for map section on very small screens */
+            }
+
+            .map-container {
+                min-height: 50vh; /* Ensure map is visible and usable on phones */
+                height: auto; /* Allow height to adjust if content is short */
+                margin-bottom: 1rem;
+            }
+
+            .footer .warning {
+                padding: 0.8rem;
+                font-size: 0.85rem;
+            }
+
+            .footer p {
+                font-size: 0.8rem;
+            }
+
+            .last-update {
+                font-size: 0.8rem;
+                margin-bottom: 0.8rem;
             }
         }
 
@@ -383,7 +478,7 @@
         <div class="hero-content">
             <h1>Freedreams Hotels + Lunch-Check</h1>
             <p>
-                This mini-project aims find Swiss hotels where you can stay for free (pay only for meals) with <a href="https://www.freedreams.ch/de/freedreams-prinzip" target="_blank">Freedreams hotel vouchers</a> and use <a href="https://www.lunch-check.ch/" target="_blank">Lunch-Check🇨🇭</a> credits to cover those meals—turning your getaway into a nearly free trip!
+                This mini-project aims find Swiss hotels where you can stay for free (pay only for meals) with <a href="https://www.freedreams.ch/de/freedreams-prinzip" target="_blank">Freedreams hotel vouchers</a> and use <a href="https://www.lunch-check.ch/" target="_blank">Lunch-Check🇨🇭</a> credits to cover those meals - turning your getaway into a nearly free trip!
             </p>
 
             <div class="steps-container">
@@ -404,6 +499,9 @@
     </section>
 
     <section class="map-section" id="map-section">
+        <div class="last-update">
+            Last update: July 22., 2025
+        </div>
         <div class="toggle-section">
             <div class="toggle-container">
                 <button class="toggle-option active" onclick="showMap('2-nights')">
@@ -445,6 +543,9 @@
                     </p>
                 </div>
             </div>
+            <p class="impressum">
+            Impressum: <a href="https://github.com/dbanyay/lunchcheck_freedreams_matcher" target="_blank">GitHub Project</a>
+            </p>
         </footer>
     </section>
 
@@ -456,7 +557,8 @@
             document.querySelectorAll('.toggle-option').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            // Use querySelector to find the button with the correct mapType onclick attribute
+            document.querySelector(`.toggle-option[onclick="showMap('${mapType}')"]`).classList.add('active');
 
             // Show loading state only if switching maps
             if (currentMap !== mapType) {

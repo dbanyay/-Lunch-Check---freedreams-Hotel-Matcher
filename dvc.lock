@@ -16,12 +16,12 @@ stages:
     outs:
     - path: data/lunchcheck_restaurants.csv
       hash: md5
-      md5: 1ac0f58f36b0075d091ab700a2bfad12
-      size: 594624
+      md5: 6b963c33a46a8f98e470ce406c2fbea3
+      size: 591704
   scrape_freedreams_2nights:
     cmd: python src/scrape_freedreams.py --base-url 
       https://www.freedreams.ch/de/hotels/schweiz --output-filename 
-      freedreams_restaurants_2nights.csv --num-nights 2 --headless
+      freedreams_restaurants_2nights.csv --num-nights 2
     deps:
     - path: src/scrape_freedreams.py
       hash: md5
@@ -33,12 +33,12 @@ stages:
     outs:
     - path: data/freedreams_restaurants_2nights.csv
       hash: md5
-      md5: 93b0c6b5039b38b26f0436a753b9a3c6
-      size: 88347
+      md5: 5f710e486c7e0b1c3c0fd55668d56ea1
+      size: 88965
   scrape_freedreams_3nights:
     cmd: python src/scrape_freedreams.py --base-url 
       https://www.freedreams.ch/de/hotels/schweiz --output-filename 
-      freedreams_restaurants_3nights.csv --num-nights 3 --headless
+      freedreams_restaurants_3nights.csv --num-nights 3
     deps:
     - path: src/scrape_freedreams.py
       hash: md5
@@ -50,8 +50,8 @@ stages:
     outs:
     - path: data/freedreams_restaurants_3nights.csv
       hash: md5
-      md5: 45b8458c3fb1fcf1dd1fcf8770ad1cea
-      size: 169973
+      md5: 6840ff5b7a39a260e42d6d486d17b184
+      size: 169734
   merge_datasets:
     cmd: python src/merge_datasets.py --input-files 
       data/lunchcheck_restaurants.csv data/freedreams_restaurants_2nights.csv 
@@ -59,16 +59,16 @@ stages:
     deps:
     - path: data/freedreams_restaurants_2nights.csv
       hash: md5
-      md5: 93b0c6b5039b38b26f0436a753b9a3c6
-      size: 88347
+      md5: 5f710e486c7e0b1c3c0fd55668d56ea1
+      size: 88965
     - path: data/freedreams_restaurants_3nights.csv
       hash: md5
-      md5: 45b8458c3fb1fcf1dd1fcf8770ad1cea
-      size: 169973
+      md5: 6840ff5b7a39a260e42d6d486d17b184
+      size: 169734
     - path: data/lunchcheck_restaurants.csv
       hash: md5
-      md5: 1ac0f58f36b0075d091ab700a2bfad12
-      size: 594624
+      md5: 6b963c33a46a8f98e470ce406c2fbea3
+      size: 591704
     - path: src/merge_datasets.py
       hash: md5
       md5: ebd5c006aa4b1e3b17fbb89a6f83559b
@@ -76,11 +76,11 @@ stages:
     outs:
     - path: output/filtered_matches_2nights.csv
       hash: md5
-      md5: 91a522f3396be3c7a91e3c09123cd739
+      md5: 0bc035eb2753c26e2159cc56f0e989ab
       size: 2791
     - path: output/filtered_matches_3nights.csv
       hash: md5
-      md5: f02d19ecd599b9e7237b86f67b70d6b3
+      md5: f0aa3c2940001142a138be2c66a726fb
       size: 4576
   collect_info_2nights:
     cmd: python src/collect_info.py --input-file 
@@ -90,7 +90,7 @@ stages:
     deps:
     - path: output/filtered_matches_2nights.csv
       hash: md5
-      md5: 91a522f3396be3c7a91e3c09123cd739
+      md5: 0bc035eb2753c26e2159cc56f0e989ab
       size: 2791
     - path: src/collect_info.py
       hash: md5
@@ -99,12 +99,12 @@ stages:
     outs:
     - path: results/2_nights_info.html
       hash: md5
-      md5: 15ae997effa0bd3da2a73a36ff28dfec
-      size: 7859109
+      md5: ecb5e8acfaf8cfc64549560a9468ab56
+      size: 8530061
     - path: results/2_nights_map.html
       hash: md5
-      md5: 91cb062ec9fbe0d1e6ac64e7a7874a4b
-      size: 6593234
+      md5: 2fc0e296d02179209fab04688db43183
+      size: 7139626
   collect_info_3nights:
     cmd: python src/collect_info.py --input-file 
       output/filtered_matches_3nights.csv --output-screenshots-html-path 
@@ -113,7 +113,7 @@ stages:
     deps:
     - path: output/filtered_matches_3nights.csv
       hash: md5
-      md5: f02d19ecd599b9e7237b86f67b70d6b3
+      md5: f0aa3c2940001142a138be2c66a726fb
       size: 4576
     - path: src/collect_info.py
       hash: md5
@@ -122,9 +122,9 @@ stages:
     outs:
     - path: results/3_nights_info.html
       hash: md5
-      md5: 951e84e16060ba6420dce47dd88a2636
-      size: 13276720
+      md5: 9199028e3d3e219d8a7fc51febe76c4e
+      size: 14362292
     - path: results/3_nights_map.html
       hash: md5
-      md5: a2904355089c27652b0093ba2c2cd70f
-      size: 11408405
+      md5: f304e0a4770eba81623710bbe067299d
+      size: 12326877

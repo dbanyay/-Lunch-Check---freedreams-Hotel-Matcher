@@ -9,7 +9,7 @@ stages:
       - data/lunchcheck_restaurants.csv
 
   scrape_freedreams_2nights:
-    cmd: python src/scrape_freedreams.py --base-url ${scrape_freedreams.base_url} --output-filename freedreams_restaurants_2nights.csv --num-nights 2 --headless
+    cmd: python src/scrape_freedreams.py --base-url ${scrape_freedreams.base_url} --output-filename freedreams_restaurants_2nights.csv --num-nights 2
     params:
       - scrape_freedreams.base_url
     deps:
@@ -18,7 +18,7 @@ stages:
         - data/freedreams_restaurants_2nights.csv
 
   scrape_freedreams_3nights:
-    cmd: python src/scrape_freedreams.py --base-url ${scrape_freedreams.base_url} --output-filename freedreams_restaurants_3nights.csv --num-nights 3 --headless
+    cmd: python src/scrape_freedreams.py --base-url ${scrape_freedreams.base_url} --output-filename freedreams_restaurants_3nights.csv --num-nights 3
     params:
       - scrape_freedreams.base_url
     deps:
@@ -54,5 +54,3 @@ stages:
     outs:
       - results/3_nights_info.html
       - results/3_nights_map.html
-
-
